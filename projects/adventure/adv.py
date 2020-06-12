@@ -5,6 +5,7 @@ from world import World
 import random
 from ast import literal_eval
 
+# DFS
 class Stack():
     def __init__(self):
         self.stack = []
@@ -40,42 +41,74 @@ player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
-traversal_path = []
-traveral_graph = dict()
 
+# DFS pseudo code
+# DFS(graph):
+#     for v of graph.verts:
+#         v.color = white
+#         v.parent = null
+
+#     for v of graph.verts:
+#         if v.color == white:
+#             DFS_visit(v)
+
+# DFS_visit(v):
+#     v.color = gray
+
+#     for neighbor of v.adjacent_nodes:
+#         if neighbor.color == white:
+#             neighbor.parent = v
+#             DFS_visit(neighbor)
+
+#     v.color = black
 
 
 # TRAVERSAL TEST
 visited_rooms = set()
 player.current_room = world.starting_room
 # visited_rooms.add(player.current_room)
+traversal_path = []
+traversal_graph = dict()
 
 s = Stack()
-s.push()([player.current_room])
+s.push([player.current_room])
 
+# while there are nodes/vertcies
 while s.size() > 0:
+    # pop the first vertex on the path/stack
     path = s.pop()
+    # Grab the last vertex from the PATH
     cur = path[-1]
-
+    # if it isnt in the visited room
     if cur not in visited_rooms:
-        visited_rooms.add(cur)
+        # add it
+        visited_rooms.add(cur)        
         traversal_graph[cur.id] = {"n": "?", "s": "?", "e": "?", "w": "?", }
 
+        # loop over exited rooms w/player
         for ex in player.current_room.get_exits():
-
+            # if the last vertex in the path
+            # of room directions isnt None
             if cur.get_room_in_direction(ex) != None:
+                # append the list
                 traversal_path.append(ex)
+                # set the key in the dic as the
+                # key in the list
                 traversal_graph[cur.id][ex] = cur.get_room_in_direction(ex).id
+                # set the last vertex in the path
+                # of room directions to next
                 nxt = cur.get_room_in_direction(ex)
+                # create a new path by
+                # creating a variable number
+                # of pops followed by the next vertex
                 new_path = [*path, nxt]
+                # and push a new one onto the stack
                 s.push(new_path)
 
             else:
+                # set it as None
                 traversal_graph[cur.id][ex] = None
 
-
-print("traversal", traversal_path)
-print("traversal graph", traversal_graph)
 
 for move in traversal_path:
     player.travel(move)
@@ -93,11 +126,11 @@ else:
 # UNCOMMENT TO WALK AROUND
 #######
 player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
